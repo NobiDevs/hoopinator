@@ -1,5 +1,3 @@
-// A program to shoot a projectile through 3 hoops
-
 function getString(prompt) {
     let input;
     do {
@@ -41,54 +39,104 @@ function getFloat(prompt) {
 function getA(prompt) {
     let input = getString(prompt).trim().toLowerCase();
     if (input === 'g') {
-        return -9.8
+        return -9.8;
     } else if (!isNaN(input)) {
-        return input
+        return parseFloat(input);
     } else {
-        throw new Error('Invalid input')
+        do {
+            alert('Invalid input. Please enter a valid number.');
+            input = getString(prompt).trim().toLowerCase();
+        } while (isNaN(input) && input !== 'g');
+        return input === 'g' ? -9.8 : parseFloat(input);
     }
 }
 
-var v = getFloat('Initial Velocity? (m/s)')
-var d = getInt('Launcher Angle?')
-var a = getA('Acceleration? (m/s)')
-var l = getFloat('Launcher Height? (cm)') / 100
-
-let yx;
-let xy;
-
-var r = d * (Math.PI / 180);
-
-var vx = (v * (Math.cos(r)));
-var vy = (v * (Math.sin(r)));
-
-var t = (-vy - vy) / a
-
-var th = t * (1 / 3)
-var hf = t * (1 / 2)
-var qt = t * (3 / 4)
-
-function y(h) {
-    var s = (a * (Math.pow(h, 2)) / 2)
-    yx = ((vy * h) + s)
-    return yx + l
+function y(h, vy, a, l) {
+    var s = (a * (Math.pow(h, 2)) / 2);
+    return (((vy * h) + s) + l) * 100;
 }
 
-function x(h) {
-    xy = vx * h
-    return xy
+function x(h, vx) {
+    return (vx * h) * 100;
 }
 
-let xv = [th, hf, qt]
-let yv = [th, hf, qt]
+function getRes(xv, yv) {
+    const tb = `
+    <table id="res-table">
+        <tr>
+            <th></th>
+            <th>Δx<br> (cm)</th>
+            <th>Δy<br> (cm)</th>
+        </tr>
+        <tr>
+            <th>H1</th>
+            <td>${xv[0].toFixed(2)}</td>
+            <td>${yv[0].toFixed(2)}</td>
+        </tr>
+        <tr>
+            <th>H2</th>
+            <td>${xv[1].toFixed(2)}</td>
+            <td>${yv[1].toFixed(2)}</td>
+        </tr>
+        <tr>
+            <th>H3</th>
+            <td>${xv[2].toFixed(2)}</td>
+            <td>${yv[2].toFixed(2)}</td>
+        </tr>
+    </table>
+    `;
 
-xv.forEach((element, index) => {
-    xv[index] = x(element)
-})
+    return tb;
+}
 
-yv.forEach((element, index) => {
-    yv[index] = y(element)
-})
+function getInp(v, d, a, l) {
+    const tb = `
+    <table id="input-table">
+        <tr>
+            <th></th>
+            <th>V<sub>i</sub></th>
+            <th>&#952;</th>
+            <th>a</th>
+            <th>&#8616;</th>
+        </tr>
+        <tr>
+            <th>input</th>
+            <td>${v}</td>
+            <td>${d}</td>
+            <td>${a}</td>
+            <td>${l}</td>
+        </tr>
+    </table>
+    `;
 
-print(xv)
-print(yv)
+    return tb;
+}
+
+function hoopinate() {
+    var v = getFloat('Initial Velocity? (m/s)');
+    var d = getInt('Launcher Angle?');
+    var a = getA('Acceleration?');
+    var l = getFloat('Launcher Height? (cm)') / 100;
+
+    var r = d * (Math.PI / 180);
+
+    var vx = (v * (Math.cos(r)));
+    var vy = (v * (Math.sin(r)));
+
+    var t = (-vy - vy) / a;
+
+    var th = t * (1 / 3);
+    var hf = t * (1 / 2);
+    var qt = t * (3 / 4);
+
+    let xv = [th, hf, qt].map(h => x(h, vx));
+    let yv = [th, hf, qt].map(h => y(h, vy, a, l));
+
+    const res = document.getElementById('res-table');
+    const inp = document.getElementById('input-table');
+
+    res.innerHTML = getRes(xv, yv);
+    inp.innerHTML = getInp(v, d, a, l);
+}
+
+window.onload = hoopinate;
