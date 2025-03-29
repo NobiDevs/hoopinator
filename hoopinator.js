@@ -41,13 +41,13 @@ function getA(prompt) {
     if (input === 'g') {
         return -9.8;
     } else if (!isNaN(input)) {
-        return parseFloat(input);
+        return -(Math.abs(parseFloat(input)));
     } else {
         do {
             alert('Invalid input. Please enter a valid number.');
             input = getString(prompt).trim().toLowerCase();
         } while (isNaN(input) && input !== 'g');
-        return input === 'g' ? -9.8 : parseFloat(input);
+        return input === 'g' ? -9.8 : -(Math.abs(parseFloat(input)));
     }
 }
 
@@ -87,11 +87,11 @@ window.temp = temp();
 
 function y(h, vy, a, l) {
     var s = (a * (Math.pow(h, 2)) / 2);
-    return (((vy * h) + s) + l) * 100;
+    return (((vy * h) + s) + l);
 }
 
 function x(h, vx) {
-    return (vx * h) * 100;
+    return (vx * h);
 }
 
 function getRes(xv, yv) {
@@ -99,23 +99,39 @@ function getRes(xv, yv) {
     <table id="res-table" class="styled-table">
         <tr>
             <th></th>
-            <th>Δx<br> (cm)</th>
-            <th>Δy<br> (cm)</th>
+            <th>Δx<br> (m)</th>
+            <th>Δy<br> (m)</th>
         </tr>
         <tr>
-            <th><sup>1</sup>&frasl;<sub>3</sub></th>
+            <th class="cell">
+                <div class="t-position"><sup>1</sup>&frasl;<sub>3</sub></div>
+                <div class="t-number">T1</div>
+            </th>
             <td>${xv[0].toFixed(2)}</td>
             <td>${yv[0].toFixed(2)}</td>
         </tr>
         <tr>
-            <th><sup>1</sup>&frasl;<sub>2</sub></th>
+            <th class="cell">
+                <div class="t-position"><sup>1</sup>&frasl;<sub>2</sub></div>
+                <div class="t-number">T2</div>
+            </th>
             <td>${xv[1].toFixed(2)}</td>
             <td>${yv[1].toFixed(2)}</td>
         </tr>
         <tr>
-            <th><sup>3</sup>&frasl;<sub>4</sub></th>
+            <th class="cell">
+                <div class="t-position"><sup>3</sup>&frasl;<sub>4</sub></div>
+                <div class="t-number">T3</div>
+            </th>
             <td>${xv[2].toFixed(2)}</td>
             <td>${yv[2].toFixed(2)}</td>
+        </tr>
+        <tr>
+            <th class="cell">
+                <div class="t-position">T</div>
+                <div class="t-number">F</div>
+            </th>
+            <td colspan="2">${xv[3].toFixed(2)}</td>
         </tr>
     </table>
     `;
@@ -168,8 +184,8 @@ function hoopinate() {
     var hf = t * (1 / 2);
     var qt = t * (3 / 4);
 
-    xv = [th, hf, qt].map(h => x(h, vx));
-    yv = [th, hf, qt].map(h => y(h, vy, a, l));
+    xv = [th, hf, qt, t].map(h => x(h, vx));
+    yv = [th, hf, qt, t].map(h => y(h, vy, a, l));
 
     load(true)
 }
@@ -180,13 +196,13 @@ function load(c) {
     loadTime = Math.random() * (5000 - 2000) + 2000
 
     if (c) {
-        element.style.visibility = 'visible'
+        element.style.display = 'flex'
         res.style.display = 'none'
         inp.style.display = 'none'
 
         setTimeout(readRes, loadTime)
     } else {
-        element.style.visibility = 'hidden'
+        element.style.display = 'none'
         res.style.display = 'flex'
         inp.style.display = 'flex'
     }
@@ -254,5 +270,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const print = document.getElementById('pButton');
     print.addEventListener('click', function() {
         printContainer('cont');
+    });
+    
+    const darkModeToggle = document.querySelector('.dark-mode-toggle');
+    const moonIcon = darkModeToggle.querySelector('.moon-icon');
+    const sunIcon = darkModeToggle.querySelector('.sun-icon');
+    
+    darkModeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('dark-mode');
+    
+    if (document.body.classList.contains('dark-mode')) {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'block';
+        darkModeToggle.setAttribute('aria-label', 'Activate light mode');
+    } else {
+        moonIcon.style.display = 'block';
+        sunIcon.style.display = 'none';
+        darkModeToggle.setAttribute('aria-label', 'Activate dark mode');
+    }
     });
 });
