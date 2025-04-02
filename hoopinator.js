@@ -171,7 +171,7 @@ function hoopinate() {
     v = getFloat('Initial Velocity? (m/s)');
     d = getInt('Launcher Angle?');
     a = getA('Acceleration?');
-    l = getFloat('Launcher Height? (cm)') / 100;
+    l = getFloat('Launcher Height? (m)');
 
     var r = d * (Math.PI / 180);
 
